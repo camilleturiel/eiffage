@@ -34,10 +34,11 @@
      debug:
        msg: "{{ ansible_facts[\"nodename\"] }} is a Docker engine host"
      with_items: "{{ docker_packages }}"
-      
-      block:
-       #- name: Deploy Python3 runtime.
-       - name: Setup Docker stuff
+     when: item in ansible_facts.packages
+  
+   - name: Setup Docker stuff
+       block:
+       - name: Copy Docker plugin script
          copy:
            src: check_docker.py
            dest: /usr/local/nagios/libexec/check_docker
@@ -57,7 +58,6 @@
            append=true
            groups='docker'
            state=present
-     when: item in ansible_facts.packages
 
    - name: Check if we're targeting a VM and then deploy suitable plugin.
      debug:
