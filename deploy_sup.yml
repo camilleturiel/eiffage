@@ -10,10 +10,11 @@
      docker_packages:
        - "docker-ce"
        - "docker-engine"
-       - "docker-enginei-selinux"
+       - "docker-engine-selinux"
      docker_plugin_name: "./files/check_docker.py"
      docker_plugin_conf: "./files/check_docker.cf"
-     nrpe_config: "/etc/nagios/nrpe.cfg"
+     nrpe_config_dir: "/etc/nagios"
+     nrpe_config_file: "{{ nrpe_config_dir }}/nrpe.cfg"
      nrpe_template: "nrpe.tmpl"
      nrpe_user: "nrpe"
 
@@ -42,15 +43,15 @@
    - block:   
        - name: Copy Docker plugin script
          copy:
-          src: {{ docker_plugin_name }}
+          src: "{{ docker_plugin_name }}"
           dest: /usr/local/nagios/libexec/check_docker
           mode: 0755
           owner: nagios
           group: root
        - name: Copy Docker plugin configuration
          copy:
-          src: {{ docker_plugin_conf }}
-          dest: /etc/nrpe/config/check_docker.cfg
+          src: "{{ docker_plugin_conf }}"
+          dest: "/etc/nrpe/config/check_docker.cfg"
           mode: 0655
           owner: nagios
           group: root
@@ -66,10 +67,10 @@
        msg: "{{ ansible_facts[\"nodename\"] }} is a VM"
      when: ansible_virtualization_role == "guest"
 
-   - name: Deploy NRPE configuration file from template to {{ nrpe_config }} on {{ ansible_facts['nodename'] }} 
+   - name: Deploy NRPE configuration file from template to {{ nrpe_config_file }} on {{ ansible_facts['nodename'] }} 
      template:
       src: "{{ nrpe_template }}"
-      dest: "{{ nrpe_config }}"
+      dest: "{{ nrpe_config_file }}"
       owner: root
       group: wheel
       mode: 0644
