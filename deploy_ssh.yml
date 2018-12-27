@@ -1,0 +1,59 @@
+---
+ - hosts: all
+   vars:
+     #- provision_password: '$6$txK.fkKfFhV1s6Lm$nD6Z10OY2aLLeJtX9qWdER4tNoMDEiAOLhKprukpQuvsFrCdoA7yFafYcMUB46kfoW/4NH.q6.jWJ.U/i2kBu0'
+     - provision_password: "!"
+     - provision_username: "ansible"
+     - provision_pbk_path: "~ansible/.ssh/id_rsa.pub"
+
+   gather_facts: no
+#   remote_user: root
+   become: true
+   become_user: "root" 
+   tasks:
+ 
+   - name: Add a new "{{ provision_username }}" service account.
+     user:
+          name={{ provision_username }}
+          password={{ provision_password }}
+          append=false
+          groups='docker,wheel'
+          state=present
+ 
+   - name: Add corresponding "{{ provision_username }}" sudoers entry
+     copy:
+          dest: "/etc/sudoers.d/ansible"
+          content: "ansible  ALL=(ALL)  NOPASSWD: ALL"
+ 
+   - name: Deploy SSH Key
+     authorized_key: user={{ provision_username }}
+                     key={{ lookup("file",provision_pbk_path) }}
+                     manage_dir=true
+                     exclusive=true
+                     comment="###{{ provision_username }} public_key###"
+
+   - name: Disable Password Authentication
+     lineinfile:
+           dest=/etc/ssh/sshd_config
+           regexp="^PasswordAuthentication"
+           line="PasswordAuthentication no"
+           state=present
+           backup=yes
+     notify:
+       - restart ssh
+ 
+   - name: Disable Root Login
+     lineinfile:
+           dest=/etc/ssh/sshd_config
+           regexp='^PermitRootLogin'
+           line="PermitRootLogin no"
+           state=present
+           backup=yes
+     notify:
+       - restart ssh
+ 
+   handlers:
+   - name: restart ssh
+     service:
+       name=sshd
+       state=restarted

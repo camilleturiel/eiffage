@@ -10,7 +10,9 @@
      docker_packages:
        - "docker-ce"
        - "docker-engine"
-       - "docker-engine-selinux"
+       - "docker-enginei-selinux"
+     docker_plugin_name: "./files/check_docker.py"
+     docker_plugin_conf: "./files/check_docker.cf"
      nrpe_config: "/etc/nagios/nrpe.cfg"
      nrpe_template: "nrpe.tmpl"
      nrpe_user: "nrpe"
@@ -36,28 +38,28 @@
      with_items: "{{ docker_packages }}"
      when: item in ansible_facts.packages
   
-   - name: Setup Docker stuff
-       block:
+   
+   - block:   
        - name: Copy Docker plugin script
          copy:
-           src: check_docker.py
-           dest: /usr/local/nagios/libexec/check_docker
-           mode: 0755
-           owner: nagios
-           group: root
+          src: {{ docker_plugin_name }}
+          dest: /usr/local/nagios/libexec/check_docker
+          mode: 0755
+          owner: nagios
+          group: root
        - name: Copy Docker plugin configuration
          copy:
-           src: check_docker.cfg
-           dest: /etc/nrpe/config/check_docker.cfg
-           mode: 0655
-           owner: nagios
-           group: root
+          src: {{ docker_plugin_conf }}
+          dest: /etc/nrpe/config/check_docker.cfg
+          mode: 0655
+          owner: nagios
+          group: root
        - name: "Adding NRPE user ('{{nrpe_user}}')to Docker group"
          user:
-           name={{nrpe_user}}
-           append=true
-           groups='docker'
-           state=present
+          name: "{{nrpe_user}}"
+          append: true
+          groups: 'docker'
+          state: present
 
    - name: Check if we're targeting a VM and then deploy suitable plugin.
      debug:
