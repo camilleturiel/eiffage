@@ -1,0 +1,82 @@
+---
+ - hosts: all
+   vars:
+     nagios_packages:
+#       - "nagios-hardware-plugins"
+       - "nagios-common"
+       - "nagios-linux-plugins"
+       - "nagios-common-plugins"
+       - "nrpe"
+     docker_packages:
+       - "docker-ce"
+       - "docker-engine"
+       - "docker-engine-selinux"
+     nrpe_config: "/etc/nagios/nrpe.cfg"
+     nrpe_template: "nrpe.tmpl"
+     nrpe_user: "nrpe"
+
+   #gather_facts: no
+   become: true
+   become_user: "root" 
+
+   tasks:
+
+   - name: Deploy Nagios plugins stuff and NRPE agent ({{ nagios_packages }})
+     yum:
+      name: "{{ nagios_packages }}"
+      state: latest
+
+   - name: Gather installed packages
+     package_facts:
+       manager: auto
+
+   - name: Check if we're targeting a Docker host and then deploy suitable plugin.
+     debug:
+       msg: "{{ ansible_facts[\"nodename\"] }} is a Docker engine host"
+     with_items: "{{ docker_packages }}"
+      
+      block:
+       #- name: Deploy Python3 runtime.
+       - name: Setup Docker stuff
+         copy:
+           src: check_docker.py
+           dest: /usr/local/nagios/libexec/check_docker
+           mode: 0755
+           owner: nagios
+           group: root
+       - name: Copy Docker plugin configuration
+         copy:
+           src: check_docker.cfg
+           dest: /etc/nrpe/config/check_docker.cfg
+           mode: 0655
+           owner: nagios
+           group: root
+       - name: "Adding NRPE user ('{{nrpe_user}}')to Docker group"
+         user:
+           name={{nrpe_user}}
+           append=true
+           groups='docker'
+           state=present
+     when: item in ansible_facts.packages
+
+   - name: Check if we're targeting a VM and then deploy suitable plugin.
+     debug:
+       msg: "{{ ansible_facts[\"nodename\"] }} is a VM"
+     when: ansible_virtualization_role == "guest"
+
+   - name: Deploy NRPE configuration file from template to {{ nrpe_config }} on {{ ansible_facts['nodename'] }} 
+     template:
+      src: "{{ nrpe_template }}"
+      dest: "{{ nrpe_config }}"
+      owner: root
+      group: wheel
+      mode: 0644
+     notify:
+       - restart nrpe_agent
+
+   handlers:
+   - name: restart nrpe_agent
+     service:
+       name=nrpe
+       state=restarted
+

@@ -1,0 +1,14 @@
+{{ ansible_managed | comment }}
+#
+log_facility=daemon
+pid_file=/var/run/nrpe/nrpe.pid
+server_port=5666
+nrpe_user=nrpe
+nrpe_group=nrpe
+allowed_hosts=127.0.0.1,p1supglsxd01,p1supglsxd02,p1supglsxd03,p1supglcxd01,p1supglsxp01,p1supglsxp02,p1supglsxp03,p1supglsxp04,p1supglsxp05,p1supglsxp06,p1supglsxp07,p1supglsxp08,p1supglsxp09,p1supglsxp10,slxp0122,slxp0122a,slxp0123,slxp0123a,slxp0126,slxp0126a,172.28.160.47,slxp0298,slxp0298a,slxp0299,slxp0299a,slxp0300,slxp0300a,slxp0301,slxp0301a,slxp0308,slxp0296,slxp0296a,172.28.160.96,172.28.160.95,172.28.160.97
+dont_blame_nrpe=1
+allow_bash_command_substitution=0
+debug=0
+command_timeout=60
+connection_timeout=300
+include_dir=/etc/nrpe/config/
