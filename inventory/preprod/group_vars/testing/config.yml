@@ -1,0 +1,2 @@
+---
+nrpe_allowed_hosts: "127.0.0.1,p1supglsxp04,p1supglsxp05,p1supglsxd02,p1supglsxp06,slxp0298,slxp0299,slxp0300,slxp0301,slxp0308,slxp0296,slxp0319,172.28.160.96,172.28.160.95,172.28.160.97"
