@@ -1,8 +1,7 @@
 ---
  - hosts: all
    vars:
-     #- provision_password: '$6$txK.fkKfFhV1s6Lm$nD6Z10OY2aLLeJtX9qWdER4tNoMDEiAOLhKprukpQuvsFrCdoA7yFafYcMUB46kfoW/4NH.q6.jWJ.U/i2kBu0'
-     - provision_password: "!"
+     #- provision_password: "!"
      - provision_username: "ansible"
      - provision_pbk_path: "~{{ provision_username }}/.ssh/id_rsa.pub"
      - ansible_user: "{{ raw_host_username }}"
@@ -15,9 +14,6 @@
    become_user: "root" 
    tasks:
  
-   - name: Probing Ansible connectivity.
-     ping:
-       data: 
    - name: Add a new "{{ provision_username }}" service account.
      user:
           name="{{ provision_username }}"
@@ -38,7 +34,7 @@
                      exclusive=true
                      comment="###{{ provision_username }} public_key###"
 
-   - name: Disable SSHD Password authent
+   - name: Disable SSHD password authent
      lineinfile:
            dest="/etc/ssh/sshd_config"
            regexp="^PasswordAuthentication"
@@ -48,7 +44,7 @@
      notify:
        - restart ssh
  
-   - name: Disable Root Login
+   - name: Disable root login
      lineinfile:
            dest="/etc/ssh/sshd_config"
            regexp="^PermitRootLogin"
