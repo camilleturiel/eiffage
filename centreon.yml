@@ -3,11 +3,11 @@
 # Testing playbook.... use with VM
 
 
-- hosts: localhost
+- hosts: all
   vars:
-    centreon_url: "http://slxr0138.app.eiffage.loc/centreon"
-    centreon_api_user: "test"
-    centreon_api_pass: "F3SPIUI7"
+      centreon_url: "{{ centreon_host }}"
+      centreon_api_user: "{{ centreon_user }}"
+      centreon_api_pass: "{{ centreon_pass }}"
 
   handlers:
     - name: "centreon api applycfg"
@@ -19,24 +19,24 @@
       delegate_to: localhost
 
   tasks:
-    - name: Add host to Centreon
+    - name: Add {{ ansible_hostname|upper }} ({{ ansible_fqdn }}) to Centreon
       centreon_host:
         url: "{{ centreon_url }}"
         username: "{{ centreon_api_user }}"
         password: "{{ centreon_api_pass }}"
-        name: "Integ02"
-        alias: "integlabstuff"
-        ipaddr: "slxc0095.app.eiffage.loc"
+        name: "{{ ansible_hostname }}"
+        alias: "{{ ansible_fqdn }}"
+        ipaddr: "{{ ansible_fqdn }}"
         hosttemplates:
           - TH_ROOT_GLD_NS 
         hostgroups:
-          - HG_ORD_GLA_P1
+          - HG_APP_DCK
         hostgroups_action: set
         instance: Central
         status: enabled
         state: present
-        opt:
-          - notes_url: "http://{{ ansible_fqdn }}:4000"
+        #opt:
+        #  - notes_url: "http://{{ ansible_fqdn }}:4000"
         #  - notes: "DIN secondary server"
         applycfg: True
       delegate_to: localhost
@@ -45,48 +45,48 @@
     - host
 
 
-- hosts: localhost
-  vars:
-    centreon_url: "http://slxr0138.app.eiffage.loc/centreon"
-    centreon_api_user: "test"
-    centreon_api_pass: "F3SPIUI7"
-  tasks:
-    - name: Hostgroup
-      centreon_hostgroup:
-        url: "{{ centreon_url }}"
-        username: "{{ centreon_api_user }}"
-        password: "{{ centreon_api_pass }}"
-        hg:
-          - name: test
-            alias: test
-          - name: test2r
-            alias: test2r
-          - name: test4
-        state: present
-      delegate_to: localhost
-  tags:
-    - hostgroup
+#- hosts: localhost
+#  vars:
+#    centreon_url: "http://slxr0138.app.eiffage.loc/centreon"
+#    centreon_api_user: "test"
+#    centreon_api_pass: "F3SPIUI7"
+#  tasks:
+#    - name: Hostgroup
+#      centreon_hostgroup:
+#        url: "{{ centreon_url }}"
+#        username: "{{ centreon_api_user }}"
+#        password: "{{ centreon_api_pass }}"
+#        hg:
+#          - name: test
+#            alias: test
+#          - name: test2r
+#            alias: test2r
+#          - name: test4
+#        state: present
+#      delegate_to: localhost
+#  tags:
+#    - hostgroup
 
 
-- hosts: localhost
-  vars:
-    centreon_url: "http://slxr0138.app.eiffage.loc/centreon"
-    centreon_api_user: "test"
-    centreon_api_pass: "F3SPIUI7"
+#- hosts: localhost
+#  vars:
+#    centreon_url: "http://slxr0138.app.eiffage.loc/centreon"
+#    centreon_api_user: "test"
+#    centreon_api_pass: "F3SPIUI7"
 
-  tasks:
-    - name: Add host to Centreon
-      centreon_host:
-        url: "{{ centreon_url }}"
-        username: "{{ centreon_api_user }}"
-        password: "{{ centreon_api_pass }}"
-        name: "ansible-test"
-        hosttemplates:
-          - OS-Linux-SNMP-custom
-          - App-DB-MySQL
-      delegate_to: localhost
-      notify: "centreon api applycfg"
-  tags:
-    - test
+#  tasks:
+#    - name: Add host to Centreon
+#      centreon_host:
+#        url: "{{ centreon_url }}"
+#        username: "{{ centreon_api_user }}"
+#        password: "{{ centreon_api_pass }}"
+#        name: "ansible-test"
+#        hosttemplates:
+#          - OS-Linux-SNMP-custom
+#          - App-DB-MySQL
+#      delegate_to: localhost
+#      notify: "centreon api applycfg"
+#  tags:
+#    - test
 
 

@@ -1,3 +1,5 @@
 ---
 raw_host_username: "a_cturiel"
 raw_host_password: "P@ssw0rd2018"
+centreon_user: "test"
+centreon_pass: "F3SPIUI7"
