@@ -133,7 +133,7 @@ def main():
             instance=dict(default='Central'),
             hostgroups=dict(type='list', default=None),
             hostgroups_action=dict(default='add', choices=['add', 'set']),
-            opt=dict(type='list', default=None),
+            params=dict(type='list', default=None),
             macros=dict(type='list', default=None),
             state=dict(default='present', choices=['present', 'absent']),
             status=dict(default='enabled', choices=['enabled', 'disabled']),
@@ -154,7 +154,7 @@ def main():
     instance = module.params["instance"]
     hostgroups = module.params["hostgroups"]
     hostgroups_action = module.params["hostgroups_action"]
-    opt = module.params["opt"]
+    params = module.params["params"]
     macros = module.params["macros"]
     state = module.params["state"]
     status = module.params["status"]
@@ -215,11 +215,9 @@ def main():
                 )
 
             if not host.alias == alias and alias:
-		centreon.host.setparameters(name, 'alias', alias)
-		#centreon.host.setparameters(name, "notes","helloworld")
+                centreon.host.setparameters(name, 'alias', alias)
                 has_changed = True
                 data.append("Change alias: %s -> %s" % (host.alias, alias))
-                #data.append("Change notes: %s -> %s" % (host.alias, alias))
 
             hostgroups_host = centreon.host.gethostgroup(name)
 
@@ -270,10 +268,9 @@ def main():
                             centreon.host.setmacro(name, k['name'], k['value'])
                             has_changed = True
 
-            if opt:
-                for k in opt:
-                    #centreon.host.setparameters(name, k['name'], k['value'])
-		    centreon.host.setparameters(name, "notes","HelloWorld!")
+            if params:
+                for k in params:
+                    centreon.host.setparameters(name, k['name'], k['value'])
                     has_changed = True
 
             if applycfg and has_changed:

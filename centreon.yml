@@ -24,7 +24,7 @@
         url: "{{ centreon_url }}"
         username: "{{ centreon_api_user }}"
         password: "{{ centreon_api_pass }}"
-        name: "{{ ansible_hostname }}"
+        name: "{{ ansible_hostname|upper}}"
         alias: "{{ ansible_fqdn }}"
         ipaddr: "{{ ansible_fqdn }}"
         hosttemplates:
@@ -35,9 +35,9 @@
         instance: Central
         status: enabled
         state: present
-        #opt:
-        #  - notes_url: "http://{{ ansible_fqdn }}:4000"
-        #  - notes: "DIN secondary server"
+        #params:
+        #  - notes_url: "https://wiki.company.org/servers/{{ ansible_fqdn }}"
+        #  - notes: "My Best server"
         applycfg: True
       delegate_to: localhost
       notify: "centreon api applycfg"
