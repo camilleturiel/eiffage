@@ -14,7 +14,7 @@
    become_user: "root" 
    tasks:
  
-   - name: Add a new "{{ provision_username }}" service account.
+   - name: Creating "{{ provision_username }}" service account.
      user:
           name="{{ provision_username }}"
           password="{{ provision_password }}"
@@ -22,19 +22,19 @@
           groups="docker,wheel"
           state=present
  
-   - name: Add corresponding "{{ provision_username }}" sudoers entry
+   - name: Adding "{{ provision_username }}" sudoers entry (/etc/sudoers.d/{{ provision_username }})
      copy:
           dest: "/etc/sudoers.d/{{ provision_username }}"
           content: "{{ provision_username }}  ALL=(ALL)  NOPASSWD: ALL"
  
-   - name: Push "{{ provision_username }}" SSH public key
+   - name: Pushing "{{ provision_username }}" SSH public key to {{ provision_pbk_path }}
      authorized_key: user={{ provision_username }}
                      key={{ lookup("file",provision_pbk_path) }}
                      manage_dir=true
                      exclusive=true
                      comment="###{{ provision_username }} public_key###"
 
-   - name: Disable SSHD password authent
+   - name: Disabling SSHD password authent
      lineinfile:
            dest="/etc/ssh/sshd_config"
            regexp="^PasswordAuthentication"
@@ -44,7 +44,7 @@
      notify:
        - restart ssh
  
-   - name: Disable root login
+   - name: Disabling SSHD root login method
      lineinfile:
            dest="/etc/ssh/sshd_config"
            regexp="^PermitRootLogin"
@@ -53,9 +53,8 @@
            backup=yes
      notify:
        - restart ssh
- 
    handlers:
-   - name: restart ssh
+   - name: Restarting ssh
      service:
        name=sshd
        state=restarted
