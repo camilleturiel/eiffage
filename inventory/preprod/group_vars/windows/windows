@@ -1,0 +1,7 @@
+---
+#ansible_user: a_cturiel@eiffage.loc
+ansible_user: toto
+ansible_password: P@ssw0rd2018
+ansible_port: 5986
+ansible_connection: winrm
+ansible_winrm_server_cert_validation: ignore
