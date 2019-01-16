@@ -1,5 +1,5 @@
 ---
- - hosts: all
+ - hosts: Linux
    vars:
      #- provision_password: "!"
      - provision_username: "ansible"

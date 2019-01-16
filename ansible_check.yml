@@ -1,34 +1,60 @@
 ---
 - hosts: all
-  ignore_unreachable: True
-  gather_facts: False
   tasks:
-    - name: Testing "Ansible connectivity"
+    - meta: clear_host_errors
+    - name: Define operating system groups
+      group_by: key={{ ansible_system }}
+
+- hosts: Linux
+  gather_facts: false
+  ignore_unreachable: True
+  tasks:
+    - name: Running an "Ansible pre-flight check" against Linux target
       ping:
        data: "ok, Ansible ready!"
       register: result
-      tags: ansible, check
-    - meta: clear_host_errors
+      tags: check
+
+- hosts: Win32NT
+  gather_facts: false
+  ignore_unreachable: True
+  tasks:
+    - name: Running an "Ansible pre-flight check" against Windows target
+      win_ping:
+       data: "ok, Ansible ready!"
+      register: result
+      tags: check
+
+- hosts: all
+  gather_facts: false
+  tasks:
     - debug:
         var: result
         verbosity: 1
+      tags: check
     - name: Timeout hook
       set_fact:
         host_error: "connection timed out"
       when: "'Connection timed out' in result.msg|d('')"
-      no_log: true
+      tags: check
     - name: NACK hook
       set_fact:
         host_error: "connection refused"
       when: "'Connection refused' in result.msg|d('')"
-      no_log: true
-    - name: Handling connection errors
+      tags: check
+    - name: Handling conn errors
       fail:
         msg: "Host connection failed with error {{ host_error|upper }} details: {{ result.msg|d('') }}"
-      when: "host_error is defined"
+      when: host_error is defined
+      tags: check
+    - name: Check target hardware type
+      set_fact:
+        virtual_guest: true
+      when: "'VIRTUAL' in ansible_product_name|upper"
+      tags: check
 
-- name: Deploy Ansible provisioning environment
-  import_playbook: deploy_ssh.yml
-  when: result is defined and (result.ping is not defined or (provision_force is defined and provision_force))
+- name: Deploy Ansible provisioning environment for Linux targets
+  import_playbook: deploy_provisioning.yml
+  when: result is defined and (result.ping is not defined or provision_force|d(false))
   ignore_errors: True
-  tags: deploy, ssh
+  tags: ssh,linux

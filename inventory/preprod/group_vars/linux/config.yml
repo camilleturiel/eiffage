@@ -1,7 +1,4 @@
 ---
-nrpe_allowed_hosts: "127.0.0.1,p1supglsxp04,p1supglsxp05,p1supglsxd02,p1supglsxp06,slxp0298,slxp0299,slxp0300,slxp0301,slxp0308,slxp0296,slxp0319,172.28.160.96,172.28.160.95,172.28.160.97"
-centreon_host: "http://slxr0138.app.eiffage.loc/centreon"
-#
 provision_password: "$6$txK.fkKfFhV1s6Lm$nD6Z10OY2aLLeJtX9qWdER4tNoMDEiAOLhKprukpQuvsFrCdoA7yFafYcMUB46kfoW/4NH.q6.jWJ.U/i2kBu0"
 provision_force: False
 provision_check: True

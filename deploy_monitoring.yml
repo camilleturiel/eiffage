@@ -3,18 +3,15 @@
    ignore_unreachable: True
    gather_facts: False
    tasks:
-
- - name: Check Ansible
+ - name: Running an "Ansible pre-flight check"
    import_playbook: ansible_check.yml
-   when: provision_check is defined and provision_check
-   tags: deploy, ssh, check
-# - name: ACK 
-#   meta: clear_host_errors
+   when: provision_check|d(true)
+   tags: check
 
- - hosts: all
+ - hosts: Linux
+   gather_facts: False
    vars:
      nagios_packages:
-#       - "nagios-hardware-plugins"
        - "nagios-common"
        - "nagios-linux-plugins"
        - "nagios-common-plugins"
@@ -29,29 +26,22 @@
      nrpe_config_file: "{{ nrpe_config_dir }}/nrpe.cfg"
      nrpe_template: "nrpe.tmpl"
      nrpe_user: "nrpe"
-
-   #gather_facts: no
    become: true
    become_user: "root" 
 
-
    tasks:
-
    - name: Deploying Nagios plugins stuff and NRPE agent ({{ nagios_packages }})
      yum:
       name: "{{ nagios_packages }}"
       state: latest
-
    - name: Gathering installed packages
      package_facts:
        manager: auto
-
    - name: Checking for a Docker host
      debug:
        msg: "{{ ansible_facts[\"nodename\"] }} is a Docker engine host"
      with_items: "{{ docker_packages }}"
      when: item in ansible_facts.packages
-   
    - block:   
        - name: Copying Docker plugin script
          copy:
@@ -71,29 +61,47 @@
          user:
           name: "{{nrpe_user}}"
           append: true
-          groups: 'docker'
+          groups: "docker"
           state: present
-
-   - name: Checking for a VM target
-     debug:
-       msg: "{{ ansible_facts[\"nodename\"] }} is a VM"
-     when: ansible_virtualization_role == "guest"
-
    - name: Deploy NRPE configuration file from template to {{ nrpe_config_file }} on {{ ansible_facts['nodename'] }} 
      template:
       src: "{{ nrpe_template }}"
       dest: "{{ nrpe_config_file }}"
       owner: root
       group: wheel
-      mode: 0644
+      mode: "0644"
      notify:
        - restart nrpe_agent
-
    handlers:
    - name: restart nrpe_agent
      service:
        name=nrpe
        state=restarted
+
+ - hosts: Win32NT
+   vars:
+     win_packages_repo: "E:\\Nagios\\Win64"
+     nagios_packages:
+       - "nsclientpp64-eiffage.msi"
+       - "nagios-common-plugins64.msi"
+     nagios_hw_packages:
+       - "Eiffage-ActivePerl-5.12.2-64.msi"
+       - "nagios-hardware-plugins64.msi"
+   tasks:
+     - name: Deploy NRPE commons
+       win_package:
+         path: "{{win_packages_repo}}\\{{item}}"
+         state: present
+       loop: "{{nagios_packages}}"
+       when: virtual_guest is not defined
+       tags: win
+     - name: Deploy NRPE HW Plugins+runtime
+       win_package:
+         path: "{{win_packages_repo}}\\{{item}}"
+         state: present
+       loop: "{{nagios_hw_packages}}"
+       when: virtual_guest is not defined
+       tags: win
 
  - hosts: all
    gather_facts: False
