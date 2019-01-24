@@ -1,0 +1,9 @@
+---
+- name: Define operating system groups
+  group_by: key={{ ansible_system }}
+  tags: always
+
+- name: Running a Linux target pre-flight check
+  include_tasks: stuff.yml
+  when: ansible_system == "Linux"
+

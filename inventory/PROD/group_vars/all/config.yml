@@ -3,4 +3,4 @@
 #centreon_host: "http://slxr0138.app.eiffage.loc/centreon"
 pollers_list: "'P1SUPGLSXP01','P1SUPGLSXP02','P1SUPGLSXP03'"
 cent_db_host: "SLXP0297.app.eiffage.loc"
-verbosity: 0
+#verbosity: 0

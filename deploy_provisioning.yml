@@ -67,15 +67,15 @@
            backup=yes
      notify:
        - restart_ssh
-   - name: Configuring SFTP subsystem
-     lineinfile:
-           dest="/etc/ssh/sshd_config"
-           regexp="Subsystem.*sftp.*[/usr/libexec/openssh/sftp-server|internal-sftp]"
-           line="Subsystem sftp internal-sftp"
-           state=present
-           backup=yes
-     notify:
-       - restart_ssh
+   #- name: Configuring SFTP subsystem
+     #lineinfile:
+     #      dest="/etc/ssh/sshd_config"
+     #      regexp="Subsystem.*sftp.*[/usr/libexec/openssh/sftp-server|internal-sftp]"
+     #      line="Subsystem sftp internal-sftp"
+     #      state=present
+     #      backup=yes
+     #notify:
+     #  - restart_ssh
 
    handlers:
    - name: restart_ssh

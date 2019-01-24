@@ -1,0 +1,5 @@
+---
+- hosts: all
+    #- meta: clear_host_errors
+  roles:
+    - ansible_provisioning

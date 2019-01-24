@@ -1,0 +1,20 @@
+- name: Running a Linux target pre-flight check
+  ignore_unreachable: True
+  ping:
+    data: "{{ ansible_ping_data }}"
+  register: result
+  tags: check
+
+- name: Running an "Ansible pre-flight check" against Windows target
+  ignore_unreachable: True
+  win_ping:
+    data: "{{ ansible_ping_data }}"
+  register: result
+  tags: check
+  #when: ansible_system == "Win32NT"
+- name: Debug output
+  debug:
+    msg: "{{ result.ping }}"
+    verbosity: 0
+  when: result.ping is defined
+

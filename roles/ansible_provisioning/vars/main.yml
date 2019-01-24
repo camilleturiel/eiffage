@@ -1,0 +1,3 @@
+---
+# vars file for ansible_provisioning
+ansible_ping_data: "OK, Ansible ready !"
