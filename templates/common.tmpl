@@ -1,0 +1,3 @@
+[NRPE HANDLERS]
+check_snmp=c:\perl\bin\perl.exe "c:\Program Files\NSClient++\scripts\check_centreon_snmp_value" -H $ARG1$ -C $ARG2$ -v $ARG3$ -o $ARG4$ -w $ARG5$ -c $ARG6$
+check_logfiles=c:\Perl\bin\perl.exe "c:\Program Files\NSClient++\scripts\check_logfiles.pl" -f $ARG1$

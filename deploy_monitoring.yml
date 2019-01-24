@@ -16,10 +16,6 @@
        - "nagios-linux-plugins"
        - "nagios-common-plugins"
        - "nrpe"
-     docker_packages:
-       - "docker-ce"
-       - "docker-engine"
-       - "docker-engine-selinux"
      docker_plugin_name: "./files/check_docker.py"
      docker_plugin_conf: "./files/check_docker.cf"
      nrpe_config_dir: "/etc/nagios"
@@ -37,11 +33,6 @@
    - name: Gathering installed packages
      package_facts:
        manager: auto
-   - name: Checking for a Docker host
-     debug:
-       msg: "{{ ansible_facts[\"nodename\"] }} is a Docker engine host"
-     with_items: "{{ docker_packages }}"
-     when: item in ansible_facts.packages
    - block:   
        - name: Copying Docker plugin script
          copy:
@@ -50,6 +41,7 @@
           mode: 0755
           owner: nagios
           group: root
+         when: "{{ docker_host|d(false) }}"
        - name: Copying Docker plugin configuration
          copy:
           src: "{{ docker_plugin_conf }}"
@@ -57,12 +49,15 @@
           mode: 0655
           owner: nagios
           group: root
+         when: "{{ docker_host|d(false) }}"
        - name: Adding NRPE user ('{{nrpe_user}}')to Docker group
          user:
           name: "{{nrpe_user}}"
           append: true
           groups: "docker"
           state: present
+         when: "{{ docker_host|d(false) }}"
+
    - name: Deploy NRPE configuration file from template to {{ nrpe_config_file }} on {{ ansible_facts['nodename'] }} 
      template:
       src: "{{ nrpe_template }}"

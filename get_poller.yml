@@ -1,0 +1,22 @@
+---
+- hosts: all
+  gather_facts: false
+  vars:
+      centreon_url: "{{ centreon_host }}"
+      query: "SELECT min(stat_value) as host_latency, i.instance_id, name FROM `nagios_stats` ns, instances i WHERE ns.stat_label = 'Host Check Latency' AND ns.stat_key LIKE 'Average' AND ns.instance_id = i.instance_id AND i.name IN ({{ pollers_list|d(\"'Central'\")}})"
+      db_host: "{{ cent_db_host|d('localhost')}}"
+  tasks:
+    - name: DB query
+      debug:
+        msg: "{{ query }}"
+        verbosity: "{{ verbosity|d(1) }}"
+    - name:  Querying Centreon DB to get the smallest loaded average poller
+      command: mysql {{ database|d("centreon_storage") }} -Ns -e "{{ query }}" #'select instance_id,name from instances where deleted = 0;'
+      register: best_poller
+      delegate_to: "{{ db_host|d('localhost')}}"
+      changed_when: False
+
+    - name: DB Output
+      debug:
+        msg: "Best poller: {{ best_poller.stdout.split('\t')[2] }} => {{ best_poller.stdout.split('\t')[0] }}ms. host check latency"
+        verbosity: "{{ verbosity|d(1) }}"

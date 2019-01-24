@@ -1,12 +1,14 @@
 ---
 - hosts: all
+  gather_facts: false
+  #ignore_unreachable: True
   tasks:
-    - meta: clear_host_errors
+    #- meta: clear_host_errors
     - name: Define operating system groups
       group_by: key={{ ansible_system }}
-
+      tags: always
 - hosts: Linux
-  gather_facts: false
+  gather_facts: False
   ignore_unreachable: True
   tasks:
     - name: Running an "Ansible pre-flight check" against Linux target
@@ -14,6 +16,7 @@
        data: "ok, Ansible ready!"
       register: result
       tags: check
+
 
 - hosts: Win32NT
   gather_facts: false
@@ -29,8 +32,13 @@
   gather_facts: false
   tasks:
     - debug:
-        var: result
+        msg: "RESULT: {{ result|default('VOID') }}\n"
         verbosity: 1
+      tags: check
+    - name: Permission denied hook
+      set_fact:
+        host_error2: "permission DENIED"
+      when: "'Permission denied' in result.msg|d('')"
       tags: check
     - name: Timeout hook
       set_fact:
@@ -50,11 +58,11 @@
     - name: Check target hardware type
       set_fact:
         virtual_guest: true
-      when: "'VIRTUAL' in ansible_product_name|upper"
+      when: "'Virtual' in ansible_product_name|default('Virtual')"
       tags: check
 
 - name: Deploy Ansible provisioning environment for Linux targets
   import_playbook: deploy_provisioning.yml
-  when: result is defined and (result.ping is not defined or provision_force|d(false))
+  #when: result is defined and (result.ping is not defined or provision_force|d(false))
   ignore_errors: True
   tags: ssh,linux
