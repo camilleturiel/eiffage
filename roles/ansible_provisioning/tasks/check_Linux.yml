@@ -1,0 +1,6 @@
+- name: Linux target check
+  ignore_unreachable: True
+  ping:
+    data: "{{ ansible_ping_data }}"
+  register: result
+  tags: check

@@ -41,7 +41,7 @@
           mode: 0755
           owner: nagios
           group: root
-         when: "{{ docker_host|d(false) }}"
+         when: docker_host|d(false)
        - name: Copying Docker plugin configuration
          copy:
           src: "{{ docker_plugin_conf }}"
@@ -49,14 +49,14 @@
           mode: 0655
           owner: nagios
           group: root
-         when: "{{ docker_host|d(false) }}"
+         when: docker_host|d(false)
        - name: Adding NRPE user ('{{nrpe_user}}')to Docker group
          user:
           name: "{{nrpe_user}}"
           append: true
           groups: "docker"
           state: present
-         when: "{{ docker_host|d(false) }}"
+         when: docker_host|d(false)
 
    - name: Deploy NRPE configuration file from template to {{ nrpe_config_file }} on {{ ansible_facts['nodename'] }} 
      template:

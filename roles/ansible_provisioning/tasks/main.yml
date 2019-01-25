@@ -3,7 +3,7 @@
   group_by: key={{ ansible_system }}
   tags: always
 
-- name: Running a Linux target pre-flight check
-  include_tasks: stuff.yml
-  when: ansible_system == "Linux"
+- name: Preflight check
+  include_tasks: "check_{{ ansible_system }}.yml"
+  when: ansible_system == "Linux" or ansible_system == "Win32NT"
 

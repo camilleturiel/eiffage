@@ -1,0 +1,6 @@
+- name: Windows target check
+  ignore_unreachable: True
+  win_ping:
+    data: "{{ ansible_ping_data }}"
+  register: result
+  tags: check
