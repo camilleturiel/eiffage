@@ -3,6 +3,7 @@
   service:
     name: nrpe
     state: restarted
+  become: yes
 
 - name: Commit centreon configuration
   centreon_poller:
