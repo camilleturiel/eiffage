@@ -1,0 +1,20 @@
+---
+- name: Check for a VM target
+  group_by:
+    key: "{{ ansible_product_name|regex_search('Virtual') }}"
+  when: "'Virtual' in ansible_product_name|d('Virtual')"
+  tags: check,provision
+
+- name: Check for an hardware target
+  group_by:
+    key: "{{ ansible_system_vendor|regex_search('HP|Dell') }}"
+    parents: "Hardware"
+  when: "not 'VMware' in ansible_system_vendor|d('Others')"
+  tags: check,provision
+
+- name: Display host groups membership
+  debug:
+    msg: "[{{ item }}]"
+    verbosity: 0
+  with_items: "{{ group_names }}"
+  tags: check

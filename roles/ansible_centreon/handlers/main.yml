@@ -1,2 +1,13 @@
 ---
-# handlers file for ansible_centreon
+- name: restart nrpe_agent
+  service:
+    name: nrpe
+    state: restarted
+
+- name: Commit centreon configuration
+  centreon_poller:
+    url: "{{ centreon_url }}"
+    username: "{{ centreon_api_user }}"
+    password: "{{ centreon_api_pass }}"
+  listen: "cent_api_applycfg"
+  delegate_to: localhost

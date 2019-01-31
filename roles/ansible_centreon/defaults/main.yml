@@ -1,2 +1,12 @@
 ---
-# defaults file for ansible_centreon
+nagios_packages:
+  - "nagios-common"
+  - "nagios-linux-plugins"
+  - "nagios-common-plugins"
+  - "nrpe"
+docker_plugin_name: "./files/check_docker.py"
+docker_plugin_conf: "./files/check_docker.cf"
+nrpe_config_dir: "/etc/nagios"
+nrpe_config_file: "{{ nrpe_config_dir }}/nrpe.cfg"
+nrpe_template: "nrpe.tmpl"
+nrpe_user: "nrpe"

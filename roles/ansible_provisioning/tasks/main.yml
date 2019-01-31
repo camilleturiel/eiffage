@@ -1,9 +1,22 @@
 ---
+- name: Loading essential facts
+  setup:
+    gather_subset:
+      - 'min'
+      - 'hardware'
+  tags: check,provision
 - name: Define operating system groups
   group_by: key={{ ansible_system }}
-  tags: always
-
-- name: Preflight check
-  include_tasks: "check_{{ ansible_system }}.yml"
+  tags: check,provision
+- name: System specific target facts check
+  include_tasks: "check_{{ ansible_system }}_target_facts.yml"
   when: ansible_system == "Linux" or ansible_system == "Win32NT"
-
+  tags: check,provision
+- name: Common target facts check
+  include_tasks: "check_Common_target_facts.yml"
+  when: ansible_system == "Linux" or ansible_system == "Win32NT"
+  tags: check,provision
+- name: Provisioning deployment
+  include_tasks: "deploy_{{ ansible_system }}.yml"
+  when: check_ansible is defined and check_ansible.ping is not defined or force_provisioning|d(False) == True
+  tags: provision

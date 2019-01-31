@@ -1,2 +1,13 @@
 ---
-# vars file for ansible_centreon
+win_packages_repo: "E:\\Nagios\\Win64"
+win_nagios_packages:
+  - "nsclientpp64-eiffage.msi"
+  - "nagios-common-plugins64.msi"
+win_nagios_hw_packages:
+  - "Eiffage-ActivePerl-5.12.2-64.msi"
+  - "nagios-hardware-plugins64.msi"
+centreon_url: "{{ centreon_host }}"
+centreon_api_user: "{{ centreon_user }}"
+centreon_api_pass: "{{ centreon_pass }}"
+query: "SELECT min(stat_value) as host_latency, i.instance_id, name FROM `nagios_stats` ns, instances i WHERE deleted = 0 AND ns.stat_label = 'Host Check Latency' AND ns.stat_key LIKE 'Average' AND ns.instance_id = i.instance_id AND i.name IN ({{ pollers_list|d(\"'Central'\")}})"
+db_host: "{{ cent_db_host|d('localhost')}}"

@@ -1,2 +1,19 @@
 ---
-# tasks file for ansible_centreon
+- name: Loading Linux specific monitoring tasks
+  include_tasks: "deploy_{{ ansible_system }}_monitoring.yml"
+  vars:
+    become: True
+    become_user: "root"
+    ansible_user: "ansible"
+    ansible_become: True
+  when: ansible_system == "Linux"
+  tags: check,provision
+
+- name: Loading Windows specific monitoring tasks
+  include_tasks: "deploy_{{ ansible_system }}_monitoring.yml"
+  when: ansible_system == "Win32NT"
+  tags: check,provision
+
+- name: Loading common monitoring tasks
+  include_tasks: "deploy_Common_monitoring.yml"
+  when: ansible_system == "Linux" or ansible_system == "Win32NT"

@@ -1,2 +1,3 @@
 ---
-# defaults file for ansible_provisioning
+provision_username: "ansible"
+provision_pbk_path: "~{{ provision_username }}/.ssh/id_rsa.pub"

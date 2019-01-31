@@ -1,0 +1,37 @@
+---
+- name: "Deploy Nagios plugins stuff and NRPE agent ({{ nagios_packages }})"
+  yum:
+   name: "{{ nagios_packages }}"
+   state: latest
+- block:
+    - name: "Copy Docker plugin script to /usr/local/nagios/libexec/check_docker"
+      copy:
+       src: "{{ docker_plugin_name }}"
+       dest: "/usr/local/nagios/libexec/check_docker"
+       mode: "0755"
+       owner: "nagios"
+       group: "root"
+    - name: "Copy Docker plugin configuration to /etc/nrpe/config/check_docker.cfg"
+      copy:
+       src: "{{ docker_plugin_conf }}"
+       dest: "/etc/nrpe/config/check_docker.cfg"
+       mode: "0655"
+       owner: "nagios"
+       group: "root"
+    - name: "Add NRPE user ('{{nrpe_user}}')to Docker group"
+      user:
+       name: "{{nrpe_user}}"
+       append: true
+       groups: "docker"
+       state: present
+  when: "'DOCKER' in group_names|upper()"
+
+- name: "Deploy NRPE configuration file from template to {{ nrpe_config_file }} on {{ ansible_facts['nodename'] }}"
+  template:
+    src: "{{ nrpe_template }}"
+    dest: "{{ nrpe_config_file }}"
+    owner: "root"
+    group: "wheel"
+    mode: "0644"
+  notify:
+    - restart nrpe_agent

@@ -1,0 +1,10 @@
+- name: Gather Linux system services
+  service_facts:
+  tags: docker,check,provision
+
+- name: Check for a Linux Docker host
+  group_by:
+    key: "Docker"
+    parents: "Linux"
+  when: "(ansible_facts.services['docker.service'] is defined or ansible_facts.services['docker'] is defined)"
+  tags: docker,check,provision

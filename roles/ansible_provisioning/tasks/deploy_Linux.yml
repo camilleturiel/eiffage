@@ -1,0 +1,35 @@
+---
+- name: "Assign {{ provision_username }} to Docker group"
+  set_fact:
+    usergrp: "docker,wheel"
+  when: '"Docker" in group_names'
+  tags: provision,docker
+- name: "Create {{ provision_username }} service account"
+  user:
+    name: "{{ provision_username }}"
+    password: "{{ provision_password }}"
+    append: false
+    groups: "{{ usergrp|d('wheel') }}"
+    state: present
+  tags: provision
+- name: "Add {{ provision_username }} sudoers entry => (/etc/sudoers.d/{{ provision_username }})"
+  copy:
+    dest: "/etc/sudoers.d/{{ provision_username }}"
+    content: "{{ provision_username }}  ALL=(ALL)  NOPASSWD: ALL"
+- name: Push "{{ provision_username }}" SSH public key to {{ provision_pbk_path }}
+  authorized_key: user={{ provision_username }}
+                  key={{ lookup("file",provision_pbk_path) }}
+                  manage_dir=true
+                  exclusive=true
+                  comment="###{{ provision_username }} public_key###"
+  tags: provision
+- name: "Deploy SSHD standard Linux configuration file to /etc/ssh/sshd_config"
+  template:
+    src: "{{ sshd_template }}"
+    dest: "/etc/ssh/sshd_config"
+    owner: root
+    group: root
+    mode: "0700"
+  notify:
+    - restart_ssh
+

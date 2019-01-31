@@ -1,0 +1,18 @@
+{{ ansible_managed | comment }}
+#
+Port 22
+Protocol 2
+AddressFamily inet
+LogLevel INFO
+UseDNS no
+PermitRootLogin no
+StrictModes yes
+PasswordAuthentication yes
+AllowGroups wheel ddmtrack nagios oinstall ddmtrack gi_lin_adm dl_lin_inge_adm dl_lin_expl_adm
+UseLogin no
+UsePAM yes
+PrintMotd yes
+PrintLastLog yes
+X11Forwarding yes
+#Using internal SFTP for Linux hosts
+Subsystem sftp internal-sftp

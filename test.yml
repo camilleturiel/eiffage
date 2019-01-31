@@ -1,5 +1,26 @@
 ---
 - hosts: all
-    #- meta: clear_host_errors
-  roles:
-    - ansible_provisioning
+  gather_facts: False
+- name: Ansible preflight check
+  import_playbook: ansible.yml
+
+- hosts: all
+  gather_facts: False
+  tasks:
+  - name: Deploy NRPE/Centreon monitoring
+    include_role:
+      name: ansible_centreon
+
+- hosts: Hardware,Windows
+  gather_facts: False
+  tasks:
+  - name: 
+    debug:
+      msg: "This task and subsequent ones will run ONLY on HARDWARE targets groups (dynamically assigned)"
+
+- hosts: Virtual, Linux, Docker
+  gather_facts: False
+  tasks:
+  - name: 
+    debug:
+      msg: "This task and subsequent ones will run ONLY on DOCKER hosts, using VIRTUAL machines targets groups running LINUX systems (dynamically assigned)"

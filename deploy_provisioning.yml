@@ -8,7 +8,7 @@
      - provision_pbk_path: "~{{ provision_username }}/.ssh/id_rsa.pub"
      - ansible_user: "{{ raw_host_username }}"
      - ansible_ssh_pass: "{{ raw_host_password }}"
-     - ansible_become: True
+#     - ansible_become: True
      - ansible_become_pass: "{{ ansible_ssh_pass }}"
 #   remote_user: root
    become: true

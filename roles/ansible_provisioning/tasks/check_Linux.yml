@@ -1,6 +1,33 @@
-- name: Linux target check
+- name: Check Linux ansible connectivity
+  #become: false
+  #become_user: "ansible"
   ignore_unreachable: True
   ping:
     data: "{{ ansible_ping_data }}"
   register: result
   tags: check
+
+- name: Check debug
+  debug:
+    msg: "RESULT: {{ result|default('VOID') }}\n"
+    verbosity: 1
+  tags: check
+
+- name: Timeout hook
+  set_fact:
+    host_error: "connection timed out"
+  when: "'Connection timed out' in result.msg|d('')"
+  tags: check
+
+- name: NACK hook
+  set_fact:
+    host_error: "connection refused"
+  when: "'Connection refused' in result.msg|d('')"
+  tags: check
+
+- name: Handling conn errors
+  fail:
+    msg: "Host connection failed with error {{ host_error|upper }} details: {{ result.msg|d('') }}"
+  when: host_error is defined
+  tags: check
+

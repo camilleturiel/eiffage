@@ -1,0 +1,12 @@
+- name: Check Windows system services
+  win_service:
+    name: "{{ docker_win }}"
+  register: win_service_info
+  tags: docker,check,provision
+
+- name: Check for a Windows Docker host
+  group_by:
+    key: "Docker"
+    parents: "Windows"
+  when: "win_service_info.exists == True"
+  tags: docker,check,provision

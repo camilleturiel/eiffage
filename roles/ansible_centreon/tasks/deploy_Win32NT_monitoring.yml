@@ -1,0 +1,13 @@
+---
+- name: Deploy NRPE commons
+  win_package:
+    path: "{{win_packages_repo}}\\{{item}}"
+    state: present
+  loop: "{{win_nagios_packages}}"
+
+- name: Deploy NRPE HW Plugins+runtime
+  win_package:
+    path: "{{win_packages_repo}}\\{{item}}"
+    state: present
+  loop: "{{win_nagios_hw_packages}}"
+  when: "'VIRTUAL' not in group_names|upper()"

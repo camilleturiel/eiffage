@@ -1,0 +1,50 @@
+---
+#
+#Linux targets
+#
+- hosts: Linux
+  gather_facts: false
+  become: False
+  vars:
+    ansible_user: "{{ provision_username }}"
+    skip_check: False
+  tasks: 
+    - name: Check Linux ansible connectivity
+      ignore_unreachable: True
+      ping:
+        data: "OK, Ansible ready!"
+      register: check_ansible
+      tags: check
+      when: skip_check|d(false) != True
+    - name: Loading ansible provisioning role
+      include_role:
+        name: ansible_provisioning
+      tags: provision,check
+      vars:
+        ansible_user: "{{ raw_host_username }}"
+        ansible_ssh_pass: "{{ raw_host_password }}"
+        ansible_become_pass: "{{ ansible_ssh_pass }}"
+        ansible_become: True
+        force_provisioning: False
+#
+#Win32NT targets
+#
+- hosts: Windows
+  gather_facts: false
+  become: False
+  vars:
+    skip_check: True
+  tasks:
+    - name: Check Windows ansible connectivity
+      ignore_unreachable: True
+      win_ping:
+        data: "OK, Ansible ready!"
+      register: check_ansible
+      tags: check
+      when: skip_check|d(false) != True
+    - name: Loading ansible provisioning role
+      include_role:
+        name: ansible_provisioning
+      tags: provision,check
+      vars:
+        force_provisioning: False
