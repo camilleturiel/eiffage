@@ -1,4 +1,4 @@
 ---
-nrpe_allowed_hosts: "127.0.0.1,p1supglsxp04,p1supglsxp05,p1supglsxd02,p1supglsxp06,slxp0298,slxp0299,slxp0300,slxp0301,slxp0308,slxp0296,slxp0319,172.28.160.96,172.28.160.95,172.28.160.97"
-centreon_host: "http://slxr0138.app.eiffage.loc/centreon"
-cent_db_host: "SLXR0139.app.eiffage.loc"
+nrpe_allowed_hosts: "127.0.0.1,xxxxxxx,xxxxxxx"
+centreon_host: "http://xxxxxxx/centreon"
+cent_db_host: "xxxxxxx"
