@@ -1,5 +1,5 @@
 ---
-provision_password: "$6$txK.fkKfFhV1s6Lm$nD6Z10OY2aLLeJtX9qWdER4tNoMDEiAOLhKprukpQuvsFrCdoA7yFafYcMUB46kfoW/4NH.q6.jWJ.U/i2kBu0"
+provision_password: "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
 provision_force: False
 provision_check: True
 #provision_password: "!"
