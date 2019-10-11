@@ -1,5 +1,5 @@
 ---
-raw_host_username: "a_cturiel"
-raw_host_password: "P@ssw0rd2018"
-centreon_user: "test"
-centreon_pass: "F3SPIUI7"
+raw_host_username: "xxxxxxx"
+raw_host_password: "xxxxxxx"
+centreon_user: "xxxxxxx"
+centreon_pass: "xxxxxxx"
